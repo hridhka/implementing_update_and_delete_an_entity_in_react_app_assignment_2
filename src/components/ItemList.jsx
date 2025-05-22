@@ -1,14 +1,13 @@
-import Item from "./Item";
+import React from "react";
+import ItemList from "./components/ItemList";
 
-const ItemList = ({ items }) => {
-    // your code here
-    return (
-        <>
-            {items.map((item) => (
-                <Item key={item.id} item={item} />
-            ))}
-        </>
-    );
-};
+function App() {
+  return (
+    <div className="App">
+      <h1>My Item Manager</h1>
+      <ItemList />
+    </div>
+  );
+}
 
-export default ItemList;
+export default App;

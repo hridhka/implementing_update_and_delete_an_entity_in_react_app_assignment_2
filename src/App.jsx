@@ -1,15 +1,52 @@
-import ItemList from "./components/ItemList";
+import React, { useEffect, useState } from "react";
+import Item from "./Item";
 
-// use the following link to get the data
-// `/doors` will give you all the doors.
-const API_URI = `https://${import.meta.env.VITE_API_URI}/doors`;
+const ItemList = () => {
+  const [items, setItems] = useState([]);
+  const [error, setError] = useState(null);
 
-function App() {
-  // Get the existing item from the server
-  // const [items, setItems] = useState(null);
-  // pass the item to UpdateItem as a prop
+  const API_URI = import.meta.env.VITE_API_URI; // Or replace with hardcoded URL if needed
 
-  return <ItemList />;
-}
+  // Fetch items on mount
+  useEffect(() => {
+    fetchItems();
+  }, []);
 
-export default App;
+  const fetchItems = async () => {
+    try {
+      const response = await fetch(`${API_URI}/items`);
+      const data = await response.json();
+      setItems(data);
+    } catch (err) {
+      setError("Failed to fetch items");
+    }
+  };
+
+  const deleteItem = async (id) => {
+    try {
+      const response = await fetch(`${API_URI}/items/${id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        setItems(items.filter((item) => item.id !== id));
+      } else {
+        throw new Error("Delete failed");
+      }
+    } catch (err) {
+      setError("Failed to delete item");
+    }
+  };
+
+  return (
+    <div>
+      <h2>Item List</h2>
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      {items.map((item) => (
+        <Item key={item.id} item={item} onDelete={deleteItem} />
+      ))}
+    </div>
+  );
+};
+
+export default ItemList;
